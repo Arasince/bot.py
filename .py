@@ -1,6 +1,8 @@
 import discord
-from discord.ext import commands
 from config import token
+from discord.ext import commands
+import os
+import random
 
 class MyBot(commands.Bot):
     def __init__(self, intents):
@@ -14,10 +16,16 @@ class MyBot(commands.Bot):
             return
         if message.content.startswith('$merhaba'):
             await message.channel.send("Selam!")
+        if message.content.startswith('$help'):
+            await message.channel.send("komutlar: $selam, $bye, $plastik, $Kagıt!")
         elif message.content.startswith('$bye'):
             await message.channel.send("\U0001f642")
+        elif message.content.startswith('$plastik'):
+            await message.channel.send("skibidi sigma spagetti gibi gözüken plastiklerimiz dünya için çok zararlı ve ölümcül tehtitler içermektedir. plastik poşetler bu yüzden para ile omaya başladı. plastik malzemeler kullanmaktan kaçının çünkü bu tür maddeler doğada yok olmaz!")
+        elif message.content.startswith('$kagıt'):
+            await message.channel.send("Kağıt, bizim için çok önemli bir buluştur(sınav için kullanılmadığı sürece). ancak kağıdın da bazı sorunları vardır. Kağıt üretimi için günde yüzlerce kağıt kesilmekte ve bu nedenle deforestation denilen bir kavram ortaya çıktı. bu yüzden kağıt kullanırken miktarı abartmayın!")
         else:
-            await message.channel.send(message.content)
+            await message.channel.send(f"{message.content} not recognized")
 
 # Ayrıcalıklar (intents) değişkeni botun ayrıcalıklarını depolayacak
 intents = discord.Intents.default()
@@ -27,27 +35,7 @@ intents.message_content = True
 bot = MyBot(intents=intents)
 
 # Bu bağlam menüsü komutu yalnızca mesajlar üzerinde çalışır
-@bot.tree.context_menu(name='Report to Moderators')
-async def report_message(interaction: discord.Interaction, message: discord.Message):
-    await interaction.response.send_message(
-        f'Thanks for reporting this message by {message.author.mention} to our moderators.', ephemeral=True
-    )
 
-    log_channel = interaction.guild.get_channel(123456789012345678)  # Burayı kendi kanal ID'nizle değiştirin
-
-    embed = discord.Embed(title='Reported Message', color=discord.Color.red())
-    if message.content:
-        embed.description = message.content
-    else:
-        embed.description = "No content in the message."
-
-    embed.set_author(name=message.author.display_name, icon_url=message.author.display_avatar.url)
-    embed.timestamp = message.created_at
-
-    url_view = discord.ui.View()
-    url_view.add_item(discord.ui.Button(label='Go to Message', style=discord.ButtonStyle.url, url=message.jump_url))
-
-    await log_channel.send(embed=embed, view=url_view)
 
 @bot.event
 async def on_ready():
